@@ -1,0 +1,11 @@
+div {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex; }
+
+p {
+  border: 1px solid black; }
+
+body {
+  background-color: DarkMagenta; }
