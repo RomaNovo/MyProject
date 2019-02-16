@@ -2,49 +2,85 @@ var gulp   		 = require('gulp'),
 	sass   		 = require('gulp-sass'),
 	rigger 		 = require('gulp-rigger'),
 	browserSync  = require('browser-sync'),
-	autoprefixer = require('gulp-autoprefixer');
+	notify       = require('gulp-notify'),
+	autoprefixer = require('gulp-autoprefixer'),
+	cssnano      = require('gulp-cssnano'),
+	tinypng      = require('gulp-tinypng'),
+	plumber 	 = require('gulp-plumber');
 
 gulp.task('sass', function() {
-	return gulp.src('app/sass/**/*.scss')
+	return gulp.src('src/sass/**/*.scss')
+	.pipe(plumber({ errorHandler: onError }))
 	.pipe(sass())
 	.pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true}))
-	.pipe(gulp.dest('app/css'))
+	.pipe(cssnano())
+	.pipe(gulp.dest('src/css'))
 	.pipe(browserSync.reload({stream: true}))
 });
 
  gulp.task('html-build', function() {
- 	gulp.src('app/**/*.html')
+ 	gulp.src('src/**/*.html')
  	.pipe(rigger())
- 	.pipe(gulp.dest('ending/'))
+ 	.pipe(gulp.dest('dist/'))
 	.pipe(browserSync.reload({stream: true}))
  });
 
  gulp.task('css-build', function() {
- 	gulp.src('app/css/*.css')
- 	.pipe(gulp.dest('ending/css/'))
+ 	gulp.src('src/css/*.css')
+ 	.pipe(gulp.dest('dist/css/'))
  	.pipe(browserSync.reload({stream: true}))
  });
 
  gulp.task('js-build', function() {
- 	gulp.src('app/js/*.js')
- 	.pipe(gulp.dest('ending/js'))
+ 	gulp.src('src/js/*.js')
+ 	.pipe(gulp.dest('dist/js'))
  	.pipe(browserSync.reload({stream: true}))
  })
 
 gulp.task('browser-sync', function() {
 	browserSync({
 		server: {
-		  baseDir: 'ending'
+		  baseDir: 'dist'
 		},
 		notify: false
 	});
 });
 
-gulp.task('watch', ['browser-sync','sass','css-build','html-build', 'js-build'], function() {
-	gulp.watch('app/sass/**/*.scss', ['sass']);
-	gulp.watch('app/css/*.css', ['css-build']);
-	gulp.watch('app/js/*.js', ['js-build']);
-	gulp.watch('app/**/*.html', ['html-build']);
+gulp.task('img:build', function() {
+    return gulp
+        .src('src/assets/img/**/*.{jpg,gif,png,svg,ico}')
+
+        /* 
+        Go to https://tinypng.com/developers
+        Replace 'YOU_API_KEY' in your API
+        */
+        .pipe(tinypng('KgYJXZQVh88Lv9HQPLf10z3vl2wvnDYv'))
+        .pipe(gulp.dest('dist/img'));
+
+});
+gulp.task('fonts', function() {
+    return gulp
+        .src('src/assets/fonts/**/*.*')
+        .pipe(gulp.dest('dist/fonts'));
+
+});
+
+gulp.task('watch', ['browser-sync','img:build','fonts','sass','css-build','html-build', 'js-build'], function() {
+	gulp.watch('src/sass/**/*.scss', function(event, cb) {
+	      setTimeout(function(){gulp.start('sass');},500) // задача выполниться через 500 миллисекунд и файл успеет сохраниться на диске
+	});
+	gulp.watch('src/sass/**/*.scss', ['sass']);
+	gulp.watch('src/css/*.css', ['css-build']);
+	gulp.watch('src/js/*.js', ['js-build']);
+	gulp.watch('src/**/*.html', ['html-build']);
 });
 
 gulp.task('default', ['watch']);
+
+var onError = function(err) {
+    notify.onError({
+        title:    "Error in " + err.plugin,
+        message: err.message
+    })(err);
+    this.emit('end');
+};
