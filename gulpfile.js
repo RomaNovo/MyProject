@@ -5,7 +5,7 @@ var gulp   		 = require('gulp'),
 	notify       = require('gulp-notify'),
 	autoprefixer = require('gulp-autoprefixer'),
 	cssnano      = require('gulp-cssnano'),
-	tinypng      = require('gulp-tinypng'),
+	tinypng      = require('gulp-tinypng-compress'),
 	plumber 	 = require('gulp-plumber');
 
 gulp.task('sass', function() {
@@ -46,18 +46,24 @@ gulp.task('browser-sync', function() {
 	});
 });
 
-gulp.task('img:build', function() {
-    return gulp
-        .src('src/assets/img/**/*.{jpg,gif,png,svg,ico}')
+//gulp.task('img:build', function() {
+//    return gulp
+//        .src('src/assets/img/**/*.{jpg,gif,png,svg,ico}')
 
-        /* 
-        Go to https://tinypng.com/developers
-        Replace 'YOU_API_KEY' in your API
-        */
-        .pipe(tinypng('KgYJXZQVh88Lv9HQPLf10z3vl2wvnDYv'))
-        .pipe(gulp.dest('dist/img'));
+       
+//        .pipe(tinypng('KgYJXZQVh88Lv9HQPLf10z3vl2wvnDYv'))
+//        .pipe(gulp.dest('dist/img'));
+//});
 
+gulp.task('img:build', function () {
+	gulp.src('src/assets/img/*.{png,jpg,jpeg}')
+		.pipe(tinypng({
+			key: 'TH1zDBpzhsTJlsXk2STZbK34mkpZyBnt',
+			log: true
+		}))
+		.pipe(gulp.dest('dist/images'));
 });
+
 gulp.task('fonts', function() {
     return gulp
         .src('src/assets/fonts/**/*.*')
