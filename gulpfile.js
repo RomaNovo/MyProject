@@ -46,15 +46,6 @@ gulp.task('browser-sync', function() {
 	});
 });
 
-//gulp.task('img:build', function() {
-//    return gulp
-//        .src('src/assets/img/**/*.{jpg,gif,png,svg,ico}')
-
-       
-//        .pipe(tinypng('KgYJXZQVh88Lv9HQPLf10z3vl2wvnDYv'))
-//        .pipe(gulp.dest('dist/img'));
-//});
-
 gulp.task('img:build', function () {
 	gulp.src('src/assets/img/*.{png,jpg,jpeg}')
 		.pipe(tinypng({
