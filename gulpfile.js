@@ -1,4 +1,4 @@
-var gulp   		 = require('gulp'),
+const gulp   		 = require('gulp'),
 	sass   		 = require('gulp-sass'),
 	rigger 		 = require('gulp-rigger'),
 	browserSync  = require('browser-sync'),
@@ -15,7 +15,7 @@ gulp.task('sass', function() {
 	.pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true}))
 	.pipe(cssnano())
 	.pipe(gulp.dest('src/css'))
-	.pipe(browserSync.reload({stream: true}))
+	.on('end', browserSync.reload) //change on(pipe(browserSync.reload({stream:true})))
 });
 
  gulp.task('html-build', function() {
@@ -28,7 +28,6 @@ gulp.task('sass', function() {
  gulp.task('css-build', function() {
  	gulp.src('src/css/*.css')
  	.pipe(gulp.dest('dist/css/'))
- 	.pipe(browserSync.reload({stream: true}))
  });
 
  gulp.task('js-build', function() {
